@@ -1,0 +1,93 @@
+# Prompt à fournir à Claude — Application QCM de révision
+
+## CONTEXTE
+Je forme des auditeurs de la Fonction Publique (catégories A, B, C, D) sur des modules
+réglementaires (déontologie, statut général, discipline, etc.). Je veux une **application
+web de QCM** de type Moodle simplifié, **mobile-first**, pour réviser module par module.
+
+Je fournirai, module après module, un document de formation (PDF/texte) à partir duquel
+tu devras **extraire et générer des questions à choix multiples**, classées par module et
+par niveau de difficulté.
+
+## OBJECTIF
+Construire une web app (React, artifact avec stockage persistant `window.storage`) qui :
+1. Extrait des QCM à partir d'un document source fourni
+2. Organise ces QCM par **module** et par **niveau de difficulté** (Facile / Moyen / Difficile)
+3. Permet à un utilisateur de s'identifier par **simple pseudo** (pas d'inscription/mot de passe)
+4. Sauvegarde la progression et les scores par pseudo, de façon persistante entre les sessions
+5. Offre une expérience **mobile-first**, fluide, moderne (UX/UI soignée)
+
+## ÉTAPE 1 — EXTRACTION DES QUESTIONS (à faire pour chaque document fourni)
+Pour le document que je t'envoie :
+- Découpe le contenu selon les chapitres/sections logiques du module (ex: recrutement,
+  carrière, droits, obligations, discipline...)
+- Génère un nombre équilibré de questions par sous-thème (ex: 8 à 15 questions/thème)
+- Pour chaque question, produis :
+  - `id` unique
+  - `module` (nom du module)
+  - `theme` (sous-thème/chapitre)
+  - `difficulte` (facile / moyen / difficile)
+  - `question` (texte, reformulé avec tes propres mots, jamais copié verbatim du document)
+  - `options` (4 propositions, une seule correcte)
+  - `bonne_reponse` (index ou id de l'option correcte)
+  - `explication` (courte justification pédagogique, citant l'article/texte de loi si pertinent)
+- Répartis les questions ainsi : ~40% facile (définitions, dates, chiffres clés),
+  ~35% moyen (procédures, conditions), ~25% difficile (cas pratiques, exceptions,
+  articulation entre plusieurs règles)
+- Vérifie qu'aucune question n'est ambiguë et qu'une seule réponse est indiscutablement correcte
+- Structure le tout en JSON exploitable par l'application
+
+## ÉTAPE 2 — APPLICATION (fonctionnalités)
+
+### Accès utilisateur
+- Écran d'accueil : saisie d'un pseudo (pas de mot de passe)
+- Le pseudo est stocké et permet de retrouver sa progression à la prochaine visite
+- Pas de gestion de compte, pas d'email, pas d'authentification complexe
+
+### Navigation
+- Écran "Modules" : liste des modules disponibles avec un indicateur de progression
+  (% de questions maîtrisées, dernier score)
+- Écran "Module" : choix du niveau de difficulté (Facile / Moyen / Difficile / Mixte)
+  + nombre de questions souhaité (ex: 10 / 20 / toutes)
+- Écran "Quiz" : une question à la fois, choix multiple, feedback immédiat
+  (bonne/mauvaise réponse + explication), barre de progression, timer optionnel
+- Écran "Résultats" : score final, détail des erreurs, bouton "revoir les questions ratées",
+  bouton "recommencer"
+
+### Progression & données
+- Stocker par pseudo : historique des scores, questions déjà vues, taux de réussite par
+  thème/difficulté
+- Permettre de cibler une révision sur les questions ratées précédemment
+- Utiliser `window.storage` (get/set/list) avec des clés claires, ex:
+  `progress:{pseudo}:{module}`, `attempts:{pseudo}:{module}:{date}`
+- Données non partagées entre utilisateurs (shared=false), sauf éventuel classement
+  optionnel (à activer plus tard si demandé)
+
+## ÉTAPE 3 — UX/UI (exigences)
+- **Mobile-first** impérativement : boutons larges, zones tactiles confortables,
+  pas de survol requis, lecture en une main
+- Design clair et rassurant, pas surchargé (cohérent avec un contexte "révision d'examen")
+- Feedback visuel immédiat (couleurs, icônes) pour bonne/mauvaise réponse
+- Barre de progression visible en permanence pendant le quiz
+- Typographie lisible, contrastes suffisants (accessibilité)
+- Transitions douces entre les écrans, pas d'animations excessives
+- Écran de résultats motivant (pas culpabilisant), avec appel à l'action clair pour progresser
+
+## CONTRAINTES TECHNIQUES
+- Développer comme artifact React unique (state en mémoire + `window.storage` pour la
+  persistance ; ne jamais utiliser localStorage/sessionStorage)
+- Prévoir une structure de données modulaire pour pouvoir ajouter facilement de nouveaux
+  modules au fur et à mesure que je fournis de nouveaux documents
+- Prévoir un point d'entrée simple pour injecter un nouveau lot de questions (nouveau module)
+  sans casser l'existant
+
+## LIVRABLES ATTENDUS
+1. La banque de questions du module (JSON) extraite du document fourni
+2. L'application QCM fonctionnelle (artifact) intégrant ce module
+3. Une brève note m'indiquant comment ajouter un nouveau module par la suite
+
+## PROCESSUS DE TRAVAIL
+- utilise document SUPPORTS_DE_COURS_DEONTOLOGIE_DE_LA_FONCTION_PUBLIQUE_2026.pdf associé au projet pour le  Module de DEONTOLOGIE DE LA FONCTION PUBLIQUE : commence par extraire les questions et me les
+  montrer avant intégration, pour validation
+- Une fois validées, intègre-les dans l'application
+- Pour chaque nouveau module envoyé ensuite, répète l'extraction puis l'intégration

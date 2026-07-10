@@ -1,0 +1,21 @@
+# Système / OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (si des outils sont ajoutés plus tard)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Sorties temporaires / captures de test
+*.tmp
+screenshot*.png
+dump*.html
