@@ -10,10 +10,14 @@ desktop.ini
 *.swo
 *~
 
-# Node (si des outils sont ajoutés plus tard)
+# Node / build
 node_modules/
+dist/
 npm-debug.log*
 yarn-error.log*
+
+# Environnement (secrets)
+.env
 
 # Sorties temporaires / captures de test
 *.tmp

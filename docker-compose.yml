@@ -1,0 +1,72 @@
+# =============================================================================
+#  QCM CPFAE — stack Docker
+#  3 services : web (nginx + PWA React) · app (API Node/Express) · db (MySQL)
+#  Traefik (sur l'hôte) route le trafic externe vers le service « web ».
+#  Copiez .env.example vers .env et adaptez les valeurs avant `docker compose up`.
+# =============================================================================
+name: cpfae
+
+services:
+  db:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  app:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - app
+    networks:
+      - internal
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=${TRAEFIK_NETWORK}"
+      - "traefik.http.routers.cpfae.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.cpfae.entrypoints=${TRAEFIK_ENTRYPOINT}"
+      - "traefik.http.routers.cpfae.tls=true"
+      - "traefik.http.routers.cpfae.tls.certresolver=${TRAEFIK_CERTRESOLVER}"
+      - "traefik.http.services.cpfae.loadbalancer.server.port=80"
+
+networks:
+  # Réseau interne privé (app <-> db, web <-> app)
+  internal:
+  # Réseau Traefik existant sur l'hôte (créé hors de ce projet)
+  traefik:
+    external: true
+    name: ${TRAEFIK_NETWORK}
+
+volumes:
+  db_data:
