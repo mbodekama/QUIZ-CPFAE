@@ -1,7 +1,7 @@
 import { AppBar } from "../components/AppBar.jsx";
 import { fmtTime, motivation } from "../lib/format.js";
 
-export function Results({ result, onReviewWrong, onRetry, onDetail, onToModule, user, onChangeUser }) {
+export function Results({ result, onReviewWrong, onRetry, onDetail, onToModule, user, onChangeUser, onHome }) {
   const { score, correct, total, durationSec } = result;
   const wrong = total - correct;
   const mo = motivation(score);
@@ -9,7 +9,7 @@ export function Results({ result, onReviewWrong, onRetry, onDetail, onToModule, 
 
   return (
     <>
-      <AppBar user={user} onChangeUser={onChangeUser} />
+      <AppBar user={user} onChangeUser={onChangeUser} onHome={onHome} />
       <main className="screen">
         <div className="result-hero">
           <div

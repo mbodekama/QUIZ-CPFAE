@@ -3,6 +3,7 @@ import { modules } from "../data.js";
 import { knownUsers, getProgress, masteredCount } from "../store.js";
 import { initials } from "../lib/format.js";
 import { toast } from "../lib/toast.js";
+import { ThemeToggle } from "../components/ThemeToggle.jsx";
 
 export function Home({ onLogin }) {
   const [pseudo, setPseudo] = useState("");
@@ -43,6 +44,8 @@ export function Home({ onLogin }) {
           <span className="logo">🎓</span>
           <span>QCM CPFAE</span>
         </div>
+        <div className="spacer" />
+        <ThemeToggle />
       </header>
       <main className="screen">
         <div className="hero">
@@ -87,8 +90,13 @@ export function Home({ onLogin }) {
             {recent.map((u) => {
               const { pct, mastered, total } = userStats(u);
               return (
-                <button key={u} className="recent-user" onClick={() => onLogin(u)}>
-                  <span className="avatar">{initials(u)}</span>
+                <button
+                  key={u}
+                  className="recent-user"
+                  aria-label={`Reprendre avec le pseudo ${u}, ${pct}% maîtrisé`}
+                  onClick={() => onLogin(u)}
+                >
+                  <span className="avatar" aria-hidden="true">{initials(u)}</span>
                   <span className="meta">
                     <span className="n">{u}</span>
                     <span className="s">

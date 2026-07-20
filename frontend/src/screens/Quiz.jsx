@@ -3,7 +3,7 @@ import { AppBar } from "../components/AppBar.jsx";
 import { getProgress, saveProgress, recordAnswer } from "../store.js";
 import { DIFF_LABEL, LETTERS, QUESTION_SECONDS } from "../lib/constants.js";
 
-export function Quiz({ user, moduleName, list, cfg, onComplete, onChangeUser }) {
+export function Quiz({ user, moduleName, list, cfg, onComplete, onChangeUser, onQuit, onHome }) {
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState(() => Array(list.length).fill(null));
   const [left, setLeft] = useState(QUESTION_SECONDS);
@@ -17,6 +17,10 @@ export function Quiz({ user, moduleName, list, cfg, onComplete, onChangeUser }) 
   const answered = answer != null;
   const pct = Math.round((index / total) * 100);
   const isLast = index === total - 1;
+
+  // Chronomètre : fraction restante (1 → 0) et palier de couleur.
+  const timerFrac = Math.max(0, Math.min(1, left / QUESTION_SECONDS));
+  const timerState = left <= 5 ? "danger" : left <= 10 ? "warn" : "ok";
 
   function stopTimer() {
     if (timerRef.current) {
@@ -65,6 +69,33 @@ export function Quiz({ user, moduleName, list, cfg, onComplete, onChangeUser }) 
     if (answered) fbRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [answered]);
 
+  function handleQuit() {
+    const answeredCount = answers.filter((a) => a != null).length;
+    if (
+      answeredCount === 0 ||
+      window.confirm(
+        "Abandonner ce quiz ? Vos réponses déjà données restent enregistrées, mais ce quiz ne sera pas comptabilisé."
+      )
+    ) {
+      stopTimer();
+      onQuit();
+    }
+  }
+
+  // Retour à l'accueil via le logo : on protège un quiz en cours comme pour l'abandon.
+  function handleHome() {
+    const answeredCount = answers.filter((a) => a != null).length;
+    if (
+      answeredCount === 0 ||
+      window.confirm(
+        "Retourner à l'accueil ? Ce quiz en cours ne sera pas comptabilisé."
+      )
+    ) {
+      stopTimer();
+      onHome();
+    }
+  }
+
   function finish() {
     const correct = answers.filter((a) => a && a.isCorrect).length;
     const score = Math.round((correct / total) * 100);
@@ -99,17 +130,31 @@ export function Quiz({ user, moduleName, list, cfg, onComplete, onChangeUser }) 
 
   return (
     <>
-      <AppBar user={user} onChangeUser={onChangeUser} />
+      <AppBar user={user} onChangeUser={onChangeUser} onHome={handleHome} />
       <main className="screen">
         <div className="quizbar">
           <div className="meta">
+            <button
+              className="quit-link"
+              onClick={handleQuit}
+              aria-label="Abandonner le quiz et revenir au module"
+            >
+              ✕ Abandonner
+            </button>
             <span>
               Question {index + 1} / {total}
             </span>
             {cfg.timer ? (
-              <span className={"timer" + (left <= 5 ? " warn" : "")}>{left}s</span>
+              <span
+                className={"timer-ring " + timerState}
+                style={{ "--frac": timerFrac }}
+                role="timer"
+                aria-label={`Temps restant : ${left} seconde${left > 1 ? "s" : ""}`}
+              >
+                <span className="tnum">{left}</span>
+              </span>
             ) : (
-              <span>{moduleName}</span>
+              <span className="mod-name">{moduleName}</span>
             )}
           </div>
           <div className="progress">

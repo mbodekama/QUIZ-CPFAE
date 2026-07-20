@@ -11,7 +11,7 @@
   --surface: #ffffff;
   --surface-2: #eef0f4;
   --text: #1c2430;
-  --text-soft: #5a6675;
+  --text-soft: #4f5b6a;
   --border: #e2e6ec;
   --ok: #1f8a4c;
   --ok-bg: #e7f5ec;
@@ -27,8 +27,12 @@
   --maxw: 640px;
 }
 
+/* Thème sombre. Les mêmes variables s'appliquent dans deux cas :
+   · préférence système sombre, SAUF si l'utilisateur a forcé « clair » ;
+   · utilisateur ayant explicitement choisi « sombre » (data-theme="dark").
+   L'attribut data-theme (spécificité supérieure) l'emporte sur le média. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #12161c;
     --surface: #1b212a;
     --surface-2: #242c37;
@@ -40,6 +44,18 @@
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.45);
   }
+}
+:root[data-theme="dark"] {
+  --bg: #12161c;
+  --surface: #1b212a;
+  --surface-2: #242c37;
+  --text: #eaeef4;
+  --text-soft: #9aa6b4;
+  --border: #2c343f;
+  --ok-bg: #16321f;
+  --ko-bg: #3a1d1d;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.45);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -88,6 +104,27 @@ button { font-family: inherit; cursor: pointer; }
   font-weight: 800;
   letter-spacing: -0.2px;
   font-size: 1.02rem;
+}
+/* Variante cliquable du logo (retour à l'accueil) */
+.appbar .brand-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.appbar .brand-btn:hover .logo {
+  filter: brightness(1.08);
+}
+.appbar .brand-btn:active {
+  transform: scale(0.98);
+}
+.appbar .brand-btn:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+  border-radius: 8px;
 }
 .appbar .brand .logo {
   width: 34px; height: 34px;
@@ -276,8 +313,9 @@ button { font-family: inherit; cursor: pointer; }
 .pill-moyen { background: #fbf0d8; color: var(--moyen); }
 .pill-difficile { background: var(--ko-bg); color: var(--difficile); }
 @media (prefers-color-scheme: dark) {
-  .pill-moyen { background: #3a2f14; }
+  :root:not([data-theme="light"]) .pill-moyen { background: #3a2f14; }
 }
+:root[data-theme="dark"] .pill-moyen { background: #3a2f14; }
 
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip {
@@ -294,9 +332,46 @@ button { font-family: inherit; cursor: pointer; }
 }
 .quizbar .meta {
   display: flex; justify-content: space-between; align-items: center;
+  gap: 10px;
   font-size: 0.82rem; font-weight: 700; color: var(--text-soft); margin-bottom: 8px;
 }
-.quizbar .timer.warn { color: var(--ko); }
+.quizbar .meta > span { text-align: center; }
+.quizbar .mod-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40%; }
+
+/* Bouton « Abandonner le quiz » — discret mais accessible */
+.quit-link {
+  display: inline-flex; align-items: center; gap: 4px; flex: none;
+  background: none; border: none; padding: 4px 2px;
+  color: var(--text-soft); font-weight: 700; font-size: 0.82rem;
+  border-radius: 8px;
+}
+.quit-link:hover, .quit-link:focus-visible { color: var(--ko); }
+
+/* Chronomètre en anneau : se vide et change de couleur (vert→orange→rouge) */
+.timer-ring {
+  --ring: var(--ok);
+  width: 40px; height: 40px; border-radius: 999px; flex: none;
+  display: grid; place-items: center; position: relative;
+  background: conic-gradient(var(--ring) calc(var(--frac) * 360deg), var(--surface-2) 0);
+  transition: background 0.25s linear;
+}
+.timer-ring::before {
+  content: ""; position: absolute; inset: 3px; border-radius: 999px; background: var(--bg);
+}
+.timer-ring .tnum {
+  position: relative; font-size: 0.9rem; font-weight: 800; color: var(--ring);
+  font-variant-numeric: tabular-nums;
+}
+.timer-ring.ok { --ring: var(--ok); }
+.timer-ring.warn { --ring: var(--moyen); }
+.timer-ring.danger { --ring: var(--ko); animation: timerPulse 1s ease-in-out infinite; }
+@keyframes timerPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .timer-ring.danger { animation: none; }
+}
 .qcard { margin-top: 6px; }
 .q-theme { font-size: 0.78rem; color: var(--text-soft); font-weight: 700; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .q-text { font-size: 1.22rem; font-weight: 700; letter-spacing: -0.3px; line-height: 1.35; }
@@ -401,4 +476,17 @@ button { font-family: inherit; cursor: pointer; }
 .theme-stat .bar > span { display: block; height: 100%; border-radius: 999px; }
 .theme-stat .tp { width: 44px; text-align: right; font-size: 0.82rem; font-weight: 700; color: var(--text-soft); flex: none; }
 
-.footnote { text-align: center; color: var(--text-soft); font-size: 0.76rem; margin-top: 24px; padding-top: 8px; }
+.footnote { text-align: center; color: var(--text-soft); font-size: 0.8rem; font-weight: 600; margin-top: 24px; padding-top: 8px; }
+
+/* Liste des modules : une colonne (mobile), deux colonnes (grand écran) */
+.modules-grid { display: grid; grid-template-columns: 1fr; gap: 14px; align-items: start; }
+.modules-grid .card { margin-bottom: 0; }
+
+/* ---------- Grand écran (desktop / tablette large) ---------- */
+@media (min-width: 900px) {
+  :root { --maxw: 860px; }
+  .modules-grid { grid-template-columns: 1fr 1fr; }
+  .module-card { height: 100%; }
+  /* Le contenu du quiz reste dans une colonne lisible, centré */
+  .qcard, .quizbar, .quiz-foot { max-width: 640px; margin-left: auto; margin-right: auto; }
+}

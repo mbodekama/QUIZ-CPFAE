@@ -80,6 +80,14 @@ export default function App() {
     setScreen("module");
   }
 
+  // Retour à l'accueil (liste des modules) depuis le logo de l'en-tête.
+  function goHome() {
+    setModuleName(null);
+    setQuiz(null);
+    setResult(null);
+    setScreen("modules");
+  }
+
   function startQuiz(list, quizCfg, { silent } = {}) {
     if (!list.length) {
       if (!silent) toast(quizCfg.onlyWrong ? "Aucune question ratée à réviser 🎉" : "Aucune question pour ce choix.");
@@ -133,7 +141,14 @@ export default function App() {
   if (screen === "home") {
     view = <Home onLogin={loginAs} />;
   } else if (screen === "modules") {
-    view = <Modules user={user} onOpenModule={openModule} onChangeUser={changeUser} />;
+    view = (
+      <Modules
+        user={user}
+        onOpenModule={openModule}
+        onChangeUser={changeUser}
+        onHome={goHome}
+      />
+    );
   } else if (screen === "module") {
     view = (
       <ModuleDetail
@@ -144,6 +159,7 @@ export default function App() {
         onBack={() => setScreen("modules")}
         onStartQuiz={startQuiz}
         onChangeUser={changeUser}
+        onHome={goHome}
       />
     );
   } else if (screen === "quiz") {
@@ -156,6 +172,8 @@ export default function App() {
         cfg={quiz.cfg}
         onComplete={onComplete}
         onChangeUser={changeUser}
+        onQuit={() => setScreen("module")}
+        onHome={goHome}
       />
     );
   } else if (screen === "results") {
@@ -168,6 +186,7 @@ export default function App() {
         onDetail={() => setScreen("review")}
         onToModule={() => setScreen("module")}
         onChangeUser={changeUser}
+        onHome={goHome}
       />
     );
   } else if (screen === "review") {
@@ -178,6 +197,7 @@ export default function App() {
         onBack={() => setScreen("results")}
         onToModule={() => setScreen("module")}
         onChangeUser={changeUser}
+        onHome={goHome}
       />
     );
   }

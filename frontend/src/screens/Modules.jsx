@@ -2,17 +2,18 @@ import { AppBar } from "../components/AppBar.jsx";
 import { modules, ALL } from "../data.js";
 import { getProgress, masteredCount, lastAttempt } from "../store.js";
 
-export function Modules({ user, onOpenModule, onChangeUser }) {
+export function Modules({ user, onOpenModule, onChangeUser, onHome }) {
   const mods = modules();
 
   return (
     <>
-      <AppBar user={user} onChangeUser={onChangeUser} />
+      <AppBar user={user} onChangeUser={onChangeUser} onHome={onHome} />
       <main className="screen">
         <h1 className="h1">Bonjour {user} 👋</h1>
         <p className="sub">Choisissez un module à réviser.</p>
         <div className="section-label">Modules disponibles</div>
 
+        <div className="modules-grid">
         {mods.map((m) => {
           const p = getProgress(user, m.name);
           const mastered = masteredCount(p, m.name);
@@ -21,11 +22,12 @@ export function Modules({ user, onOpenModule, onChangeUser }) {
           const last = lastAttempt(p);
           const lastTxt = last
             ? `Dernier score : ${last.correct}/${last.total} (${last.score}%)`
-            : "Pas encore commencé";
+            : "Commencer ce module →";
           return (
             <button
               key={m.name}
               className="card module-card tappable"
+              aria-label={`Ouvrir le module ${m.name}, ${pct}% maîtrisé, ${total} questions`}
               onClick={() => onOpenModule(m.name)}
             >
               <div className="top">
@@ -46,6 +48,7 @@ export function Modules({ user, onOpenModule, onChangeUser }) {
             </button>
           );
         })}
+        </div>
 
         <div className="footnote">
           {ALL.length} questions · {mods.length} module(s)

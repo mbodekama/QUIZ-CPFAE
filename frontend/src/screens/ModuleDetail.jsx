@@ -12,7 +12,7 @@ const DIFF_DESC = {
   mixte: "Toutes difficultés mélangées",
 };
 
-export function ModuleDetail({ user, moduleName, cfg, setCfg, onBack, onStartQuiz, onChangeUser }) {
+export function ModuleDetail({ user, moduleName, cfg, setCfg, onBack, onStartQuiz, onChangeUser, onHome }) {
   const m = moduleByName(moduleName);
   const p = getProgress(user, moduleName);
   const mastered = masteredCount(p, moduleName);
@@ -39,7 +39,7 @@ export function ModuleDetail({ user, moduleName, cfg, setCfg, onBack, onStartQui
 
   return (
     <>
-      <AppBar user={user} onChangeUser={onChangeUser} />
+      <AppBar user={user} onChangeUser={onChangeUser} onHome={onHome} />
       <main className="screen">
         <button className="backlink" onClick={onBack}>
           ‹ Modules

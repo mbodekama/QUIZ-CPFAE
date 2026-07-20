@@ -1,12 +1,12 @@
 import { AppBar } from "../components/AppBar.jsx";
 import { DIFF_LABEL } from "../lib/constants.js";
 
-export function Review({ session, onBack, onToModule, user, onChangeUser }) {
+export function Review({ session, onBack, onToModule, user, onChangeUser, onHome }) {
   const { list, answers } = session;
 
   return (
     <>
-      <AppBar user={user} onChangeUser={onChangeUser} />
+      <AppBar user={user} onChangeUser={onChangeUser} onHome={onHome} />
       <main className="screen">
         <button className="backlink" onClick={onBack}>
           ‹ Résultats

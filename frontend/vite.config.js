@@ -10,7 +10,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["icon.svg", "data/questions.js", "data/finances-publiques.js"],
+      includeAssets: [
+        "icon.svg",
+        "data/questions.js",
+        "data/finances-publiques.js",
+        "data/management-organisations.js",
+      ],
       manifest: {
         name: "QCM CPFAE — Révision Fonction Publique",
         short_name: "QCM CPFAE",
