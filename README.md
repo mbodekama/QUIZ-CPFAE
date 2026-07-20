@@ -163,3 +163,4 @@ module, ajoutez un fichier `frontend/public/data/mon-module.js` qui fait
 `window.QUESTIONS.push(...)` et déclare son entrée `MODULES_META`, puis
 référencez-le dans `frontend/index.html` (après les autres scripts `data/`).
 L'application construit automatiquement la liste des modules et des thèmes.
+# QUIZ-CPFAE
