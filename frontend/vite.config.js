@@ -9,7 +9,9 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      // "prompt" : le nouveau SW reste en attente jusqu'à ce que l'utilisateur
+      // clique sur « Actualiser » dans le bandeau (cf. src/components/UpdatePrompt.jsx).
+      registerType: "prompt",
       includeAssets: [
         "icon.svg",
         "data/questions.js",
