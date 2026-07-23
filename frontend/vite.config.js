@@ -15,6 +15,7 @@ export default defineConfig({
         "data/questions.js",
         "data/finances-publiques.js",
         "data/management-organisations.js",
+        "data/droit-administratif.js",
       ],
       manifest: {
         name: "QCM CPFAE — Révision Fonction Publique",
