@@ -34,7 +34,7 @@ export function Modules({ user, onOpenModule, onChangeUser, onHome }) {
                 <span className="mIcon">{m.icone}</span>
                 <span className="mMeta">
                   <span className="mName">{m.name}</span>
-                  <span className="mDesc">{m.description}</span>
+                  <span className="mGrade">Grade A4</span>
                 </span>
                 <span className="chev">›</span>
               </div>

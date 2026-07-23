@@ -259,6 +259,17 @@ button { font-family: inherit; cursor: pointer; }
 .module-card .mMeta { flex: 1; min-width: 0; }
 .module-card .mMeta .mName { font-weight: 800; font-size: 1.06rem; letter-spacing: -0.2px; }
 .module-card .mMeta .mDesc { color: var(--text-soft); font-size: 0.86rem; margin-top: 3px; }
+.module-card .mMeta .mGrade {
+  display: inline-block;
+  margin-top: 5px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--brand-soft, rgba(234, 115, 23, 0.12));
+  color: var(--brand, #ea7317);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
 .module-card .chev { color: var(--text-soft); font-size: 1.3rem; align-self: center; }
 
 .progress {
